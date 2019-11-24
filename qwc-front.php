@@ -25,7 +25,7 @@ function qwc_add_filters_front() {
 		/* one-argument filters */
 		'wp_mail_from_name' => 20,
 		'woocommerce_order_item_display_meta_value' => 20,
-		'woocommerce_order_items_table' => 20,
+		'woocommerce_order_details_after_order_table_items' => 20,
 		'woocommerce_page_title' => 20,
 		'woocommerce_short_description' => 20,
 		'woocommerce_variation_option_name' => 20,
@@ -41,7 +41,7 @@ function qwc_add_filters_front() {
 		'woocommerce_gateway_icon' => 20,
 		'woocommerce_order_item_name' => 20,
 		'woocommerce_order_shipping_to_display' => 20,
-		'woocommerce_order_tax_totals' => 20,
+		'woocommerce_order_get_tax_totals' => 20,
 		'woocommerce_product_title' => 20,
 		'woocommerce_rate_label' => 20,
 
@@ -63,7 +63,7 @@ function qwc_add_filters_front() {
 	}
 
 	add_filter( 'woocommerce_paypal_args', 'qwc_paypal_args' );
-	add_filter( 'woocommerce_get_product_attributes', 'qwc_get_product_attributes', 5 );
+	add_filter( 'woocommerce_product_get_attributes', 'qwc_get_product_attributes', 5 );
 	//no need add_filter( 'woocommerce_product_default_attributes', 'qwc_product_default_attributes', 5 );
 
 	//below do not seem to need
@@ -174,7 +174,7 @@ add_action( 'woocommerce_deliver_webhook_async', 'qwc_deliver_webhook_async', 5,
 function qwc_get_cart_hash($cart)
 {
 	$lang = qtranxf_getLanguage();
-	$hash = md5(json_encode($cart).$lang); 
+	$hash = md5(json_encode($cart).$lang);
 	return $hash;
 }
 
@@ -186,7 +186,7 @@ function qwc_get_cart_hash($cart)
  */
 function qwc_set_cookies_cart_hash($cart)
 {
-	$hash = qwc_get_cart_hash($cart); 
+	$hash = qwc_get_cart_hash($cart);
 	wc_setcookie( 'woocommerce_cart_hash', $hash );
 }
 
@@ -224,17 +224,17 @@ add_action( 'woocommerce_set_cart_cookies', 'qwc_set_cart_cookies' );
 
 /**
  * Dealing with mini-cart cache in internal browser storage.
- * Response to action 'woocommerce_add_to_cart_hash', which overwrites the default WC cart hash and cookies.
+ * Response to action 'woocommerce_cart_hash', which overwrites the default WC cart hash and cookies.
  * @param string $hash default WC hash.
  * @param array $cart wc variable holding contents of the cart without language information.
  * @since 1.4
  */
 function qwc_add_to_cart_hash($hash,$cart)
 {
-	$hash = qwc_get_cart_hash($cart); 
+	$hash = qwc_get_cart_hash($cart);
 	if(!headers_sent()){
 		wc_setcookie( 'woocommerce_cart_hash', $hash );
 	}
 	return $hash;
 }
-add_filter( 'woocommerce_add_to_cart_hash', 'qwc_add_to_cart_hash', 5, 2 );
+add_filter( 'woocommerce_cart_hash', 'qwc_add_to_cart_hash', 5, 2 );
